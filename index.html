@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbit — Club Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --white: #ffffff;
+    --off-white: #f8f8f6;
+    --light: #f0efec;
+    --border: #e4e2dd;
+    --muted: #9e9b95;
+    --text: #1a1916;
+    --accent: #1a1916;
+    --success: #2d7a4f;
+    --radius: 12px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off-white);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    color: var(--text);
+  }
+
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 480px;
+    overflow: hidden;
+    box-shadow: 0 2px 40px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-body {
+    padding: 32px 36px 36px;
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .field input,
+  .field select {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239e9b95' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  .field input:focus,
+  .field select:focus {
+    border-color: var(--text);
+    box-shadow: 0 0 0 3px rgba(26,25,22,0.07);
+  }
+
+  .field input::placeholder { color: #c5c2bb; }
+
+  /* Club selector — pill style */
+  .club-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .club-pill {
+    position: relative;
+  }
+
+  .club-pill input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .club-pill label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    background: var(--white);
+    user-select: none;
+  }
+
+  .club-pill label .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.18s;
+  }
+
+  .club-pill input[type="radio"]:checked + label {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--white);
+  }
+
+  .club-pill input[type="radio"]:checked + label .dot {
+    background: rgba(255,255,255,0.5);
+  }
+
+  .club-pill:last-child:nth-child(odd) label {
+    grid-column: span 2;
+  }
+
+  .club-row-5 {
+    grid-column: 1 / -1;
+  }
+
+  .submit-btn {
+    width: 100%;
+    height: 52px;
+    background: var(--text);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.1px;
+  }
+
+  .submit-btn:hover { opacity: 0.88; }
+  .submit-btn:active { transform: scale(0.985); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Loading spinner */
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .btn-text { transition: opacity 0.2s; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-12px);
+    background: var(--success);
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+    white-space: nowrap;
+    box-shadow: 0 4px 24px rgba(45,122,79,0.3);
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast svg { flex-shrink: 0; }
+
+  /* Error */
+  .error-msg {
+    font-size: 12px;
+    color: #c0392b;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .field.has-error input,
+  .field.has-error select {
+    border-color: #e8b4b0;
+  }
+
+  .field.has-error .error-msg { display: block; }
+
+  /* Club field label */
+  .field-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .field-label-row span {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* Overlay loading */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    z-index: 10;
+  }
+
+  .overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .overlay-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--text);
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+  }
+
+  .overlay-text {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <!-- Loading overlay -->
+  <div class="overlay" id="overlay">
+    <div class="overlay-spinner"></div>
+    <span class="overlay-text">Submitting your details…</span>
+  </div>
+
+
+
+  <div class="card-body">
+    <form id="regForm" novalidate>
+
+      <!-- Club selection -->
+      <div class="field" id="clubField">
+        <div class="field-label-row">
+          <span>Select Club</span>
+        </div>
+        <div class="club-grid">
+          <div class="club-pill">
+            <input type="radio" name="club" id="club-ieee" value="IEEE">
+            <label for="club-ieee"><span class="dot"></span>IEEE</label>
+          </div>
+          <div class="club-pill">
+            <input type="radio" name="club" id="club-iedc" value="IEDC">
+            <label for="club-iedc"><span class="dot"></span>IEDC</label>
+          </div>
+          <div class="club-pill">
+            <input type="radio" name="club" id="club-mulearn" value="MULEARN">
+            <label for="club-mulearn"><span class="dot"></span>MuLearn</label>
+          </div>
+          <div class="club-pill">
+            <input type="radio" name="club" id="club-iic" value="IIC">
+            <label for="club-iic"><span class="dot"></span>IIC</label>
+          </div>
+          <div class="club-pill club-row-5">
+            <input type="radio" name="club" id="club-gdg" value="GDG">
+            <label for="club-gdg"><span class="dot"></span>GDG</label>
+          </div>
+        </div>
+        <div class="error-msg" id="clubError">Please select a club.</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Name -->
+      <div class="field" id="nameField">
+        <label for="nameInput">Full Name</label>
+        <input type="text" id="nameInput" placeholder="" autocomplete="name">
+        <div class="error-msg" id="nameError">Please enter your name.</div>
+      </div>
+
+      <!-- Department -->
+      <div class="field" id="deptField">
+        <label for="deptSelect">Department</label>
+        <select id="deptSelect">
+          <option value="" disabled selected>Choose your department</option>
+          <option value="CS">CS</option>
+          <option value="CS AI">CS AI</option>
+          <option value="Mechanical">Mech</option>
+          <option value="Civil">Civil</option>
+          <option value="MCA">MCA</option>
+          <option value="MBA">MBA</option>
+          <option value="Electrical">Electrical</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Others">Others</option>
+        </select>
+        <div class="error-msg" id="deptError">Please select your department.</div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="btn-text">Submit Registration</span>
+        <div class="spinner" id="btnSpinner"></div>
+      </button>
+
+    </form>
+  </div>
+</div>
+
+<!-- Success Toast -->
+<div class="toast" id="toast">
+  <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="7" fill="rgba(255,255,255,0.25)"/>
+    <path d="M5 8l2.2 2.2L11 6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span id="toastMsg">Successfull</span>
+</div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────────────────────────
+  // Paste your deployed Google Apps Script Web App URL here:
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkmkmdD8jmEbGP-HXkRlP5TpPbIrWY1Hul5vcCP8EuJ4m_1Tr00RfYQ91eMfud1TPk-A/exec';
+  // ────────────────────────────────────────────────────────────────────────────
+
+  const form      = document.getElementById('regForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const spinner   = document.getElementById('btnSpinner');
+  const btnText   = submitBtn.querySelector('.btn-text');
+  const overlay   = document.getElementById('overlay');
+  const toast     = document.getElementById('toast');
+  const toastMsg  = document.getElementById('toastMsg');
+
+  function getClub() {
+    const r = document.querySelector('input[name="club"]:checked');
+    return r ? r.value : '';
+  }
+
+  function showError(fieldId, errId, show) {
+    const f = document.getElementById(fieldId);
+    const e = document.getElementById(errId);
+    if (show) { f.classList.add('has-error'); e.style.display = 'block'; }
+    else       { f.classList.remove('has-error'); e.style.display = 'none'; }
+  }
+
+  function validate() {
+    let ok = true;
+    const club = getClub();
+    const name = document.getElementById('nameInput').value.trim();
+    const dept = document.getElementById('deptSelect').value;
+
+    if (!club) { document.getElementById('clubError').style.display = 'block'; ok = false; }
+    else        { document.getElementById('clubError').style.display = 'none'; }
+
+    showError('nameField', 'nameError', !name);
+    showError('deptField', 'deptError', !dept);
+
+    if (!name) ok = false;
+    if (!dept) ok = false;
+    return ok;
+  }
+
+  function showToast(msg, isError = false) {
+    toastMsg.textContent = msg;
+    toast.style.background = isError ? '#c0392b' : 'var(--success)';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+
+  function setLoading(on) {
+    submitBtn.disabled = on;
+    spinner.style.display = on ? 'block' : 'none';
+    btnText.style.opacity = on ? '0' : '1';
+    overlay.classList.toggle('show', on);
+  }
+
+  function submitRegistrationJSONP(payload) {
+    return new Promise((resolve, reject) => {
+      const cbName = '__orbitRegisterCb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+      const scriptId = cbName + '_script';
+
+      const cleanup = () => {
+        const s = document.getElementById(scriptId);
+        if (s) s.remove();
+        try { delete window[cbName]; } catch (_) { window[cbName] = undefined; }
+      };
+
+      const timer = setTimeout(() => {
+        cleanup();
+        reject(new Error('Request timed out.'));
+      }, 12000);
+
+      window[cbName] = (response) => {
+        clearTimeout(timer);
+        cleanup();
+        resolve(response);
+      };
+
+      const query = new URLSearchParams({
+        action: 'register',
+        callback: cbName,
+        club: payload.club,
+        name: payload.name,
+        department: payload.department,
+        _: String(Date.now())
+      });
+
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = SCRIPT_URL + '?' + query.toString();
+      script.onerror = () => {
+        clearTimeout(timer);
+        cleanup();
+        reject(new Error('Failed to contact server.'));
+      };
+      document.body.appendChild(script);
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const club = getClub();
+    const name = document.getElementById('nameInput').value.trim();
+    const dept = document.getElementById('deptSelect').value;
+
+    setLoading(true);
+
+    try {
+      const res = await submitRegistrationJSONP({ club, name, department: dept });
+      setLoading(false);
+
+      if (!res || res.success !== true) {
+        showToast((res && res.error) || 'Submission failed. Please try again.', true);
+        return;
+      }
+
+      showToast(`✓ submitted for ${club} successfully!`);
+      form.reset();
+      document.querySelectorAll('input[name="club"]').forEach(r => r.checked = false);
+
+    } catch (err) {
+      setLoading(false);
+      showToast((err && err.message) || 'Something went wrong. Please try again.', true);
+    }
+  });
+
+  // Clear errors on input
+  document.getElementById('nameInput').addEventListener('input', () => showError('nameField','nameError',false));
+  document.getElementById('deptSelect').addEventListener('change', () => showError('deptField','deptError',false));
+  document.querySelectorAll('input[name="club"]').forEach(r =>
+    r.addEventListener('change', () => { document.getElementById('clubError').style.display='none'; })
+  );
+</script>
+</body>
+</html>
